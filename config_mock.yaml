@@ -1,0 +1,68 @@
+# Rubin Frontiers prototype -- configuration
+# Fill in the catalog path and column names. Everything else has working defaults.
+
+catalog:
+  path: data/mock_16k.fits        # FITS, CSV or ECSV (format guessed from extension)
+  format: null                   # override, e.g. "ascii.csv"; null = guess
+  id_column: null                # e.g. "APOGEE_ID" or "source_id"; carried into the membership catalog
+  # How to treat stars missing a value or error in some dimension:
+  #   drop    -> remove the star (default; required for the flow)
+  #   inflate -> keep it, set that dimension's variance very large so the
+  #              mixture model effectively marginalizes over it (XD only)
+  missing: drop
+  inflate_factor: 100.0          # inflated sigma = factor x the dimension's std
+
+# The space the models are fit in. One entry per dimension.
+# column = value column, error = 1-sigma uncertainty column (null = no error).
+# error_floor is added in quadrature (same units as the column).
+dimensions:
+  - {name: vlos,  label: "$v_{\\rm los}$ [km s$^{-1}$]",            column: VHELIO,   error: VHELIO_ERR,   error_floor: 0.0}
+  - {name: pmra,  label: "$\\mu_{\\alpha*}$ [mas yr$^{-1}$]",        column: pmra,     error: pmra_error,   error_floor: 0.0}
+  - {name: pmdec, label: "$\\mu_{\\delta}$ [mas yr$^{-1}$]",         column: pmdec,    error: pmdec_error,  error_floor: 0.0}
+  - {name: feh,   label: "[Fe/H]",                                    column: FE_H,     error: FE_H_ERR,     error_floor: 0.0}
+
+# Off-diagonal error terms, as correlation coefficients.
+correlations:
+  - {a: pmra, b: pmdec, column: pmra_pmdec_corr}
+
+xd:
+  K_values: [2, 3, 4, 5]         # numbers of components to try; best chosen by BIC
+  n_inits: 8                     # random restarts per K
+  max_iter: 500
+  tol: 1.0e-7                    # stop when mean log-likelihood changes less than this
+  reg: 1.0e-6                    # added to component covariances (standardized units)
+  n_bootstrap: 50                # bootstrap refits of the best model
+  chunk: 200000                  # stars per GPU chunk; lower it if memory runs out
+  seed: 42
+
+flow:
+  transforms: 5                  # neural spline flow layers
+  hidden: [128, 128]
+  mc_samples: 32                 # noise draws per star in the deconvolution objective
+  mc_samples_val: 128
+  batch_size: 1024
+  lr: 1.0e-3
+  max_epochs: 400
+  patience: 30                   # early stopping on validation loss
+  val_fraction: 0.1
+  n_samples_out: 200000          # deconvolved samples saved for plotting
+  seed: 42
+
+benchmark:
+  sizes: [10000, 30000, 100000, 300000, 1000000]
+  em_iters: 10                   # EM iterations timed per size
+  flow_steps: 50                 # optimizer steps timed per size
+  repeats: 2
+
+# Workload assumed for the proposal's GPU-hour estimate (edit to match the plan).
+budget:
+  target_N: [1000000, 10000000]  # stars in the full-scale runs
+  xd_K_values: 6                 # how many K values tried
+  xd_inits: 16
+  xd_iters: 300
+  xd_bootstrap: 100
+  flow_epochs: 300
+  flow_models: 20                # ensemble / hyperparameter variants
+  overhead: 1.5                  # multiplier for debugging, reruns and I/O
+
+output_dir: results_mock

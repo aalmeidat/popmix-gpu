@@ -1,0 +1,17 @@
+# data and outputs (never commit survey data)
+*.fits
+*.fits.gz
+*.csv
+*.npz
+*.h5
+data/*
+!data/.gitkeep
+results*/
+!dwarf/mock8/results_scl8mock/
+!dwarf/mock8/results_scl8mock/fit_v2.json
+logs/
+.pytorch_sif
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/

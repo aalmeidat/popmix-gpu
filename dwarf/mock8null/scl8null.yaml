@@ -1,0 +1,40 @@
+# Sculptor dSph -- halo search, version 2 (8 deg cone, local foreground)
+name: scl8null
+gmax_query: 21.0
+
+dwarf:
+  ra: 15.0387
+  dec: -33.7092
+  radius_deg: 8.0       # query radius; the outer annulus is the foreground template
+  distance_kpc: 83.9
+  ellipticity: 0.32
+  pa_deg: 99.0
+  a_plummer_deg: 0.19
+  pmra: 0.095
+  pmdec: -0.154
+  sigma_v_kms: 10.0
+
+foreground:
+  mode: annulus         # "annulus": template from fit_radius_deg..radius_deg of the same cone; "control": control field
+  fit_radius_deg: 5.5   # stars inside this radius are fit; 5.5 deg ~ 8 kpc at 84 kpc (~0.18 r200 for 1e10 Msun)
+
+control:                # kept for the "control" mode and as a cross-check
+  ra: 22.179
+  dec: -27.138
+  radius_deg: 2.5
+
+cuts:
+  gmax: 20.5
+  gmin: 14.5
+  ruwe_max: 1.4
+  color: [0.0, 2.5]
+  cmd_exclude:          # [BP-RP min, BP-RP max, G min, G max]: HB / distant-turnoff overlap
+    - [0.40, 0.95, 19.3, 20.6]
+
+model:
+  K_xd_foreground: 8
+  em_iterations: 5
+  cmd_bins: [50, 60]
+  logg_bins: 22
+  logg_column: logg_gspphot   # Zhang, Green & Rix 2023 XP log g (merged by pull_gaia_dwarf.py --xp); falls back to missing
+  halo_locus_dilate: 2    # CMD cells the halo may occupy: main-body locus dilated by this many bins

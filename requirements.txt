@@ -1,0 +1,9 @@
+torch>=2.0
+zuko>=1.0
+numpy
+scipy
+astropy
+pyyaml
+matplotlib
+astroquery   # only for dwarf/pull_gaia_dwarf.py
+requests     # only for the XP-parameter download

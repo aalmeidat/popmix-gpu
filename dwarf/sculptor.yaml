@@ -1,0 +1,32 @@
+# Sculptor dSph -- halo search prototype (Gaia DR3)
+name: sculptor
+gmax_query: 21.0        # magnitude limit in the archive query (cuts below are applied in the fit)
+
+dwarf:
+  ra: 15.0387           # 01h00m09.3s (NED / Wikipedia infobox)
+  dec: -33.7092         # -33d42m33s
+  radius_deg: 4.0       # query and footprint radius
+  distance_kpc: 83.9    # Martinez-Vazquez et al. 2015, as adopted by Tolstoy et al. 2023
+  ellipticity: 0.32     # Irwin & Hatzidimitriou 1995 (via Tolstoy et al. 2023) -- starting value, fitted
+  pa_deg: 99.0          # same source -- starting value, fitted
+  a_plummer_deg: 0.19   # ~11.3 arcmin; approximate literature value, NOT verified -- starting value, fitted
+  pmra: 0.095           # Tolstoy et al. 2023 systemic PM (mas/yr) -- starting value, fitted
+  pmdec: -0.154
+  sigma_v_kms: 10.0     # internal dispersion used to set the intrinsic PM width (not fitted)
+
+control:                # same Galactic latitude band, 9 deg from Sculptor, >= 8 deg from NGC 288,
+  ra: 22.179            # NGC 253, NGC 300, NGC 55, NGC 7793, Blanco 1, Phoenix, Fornax
+  dec: -27.138          # (b = -81.7 deg vs -83.2 deg for Sculptor)
+  radius_deg: 2.5
+
+cuts:
+  gmax: 20.5            # brighter than Gaia's incompleteness region; identical in both fields
+  gmin: 14.5
+  ruwe_max: 1.4
+  color: [0.0, 2.5]     # BP-RP window of the CMD model
+
+model:
+  K_xd_foreground: 8    # error-deconvolved mixture for the foreground astrometry (parallax, pmra, pmdec)
+  em_iterations: 8
+  cmd_bins: [50, 60]    # BP-RP x G
+  logg_bins: 22         # 0-5.5 in steps of 0.25, plus a "missing" category

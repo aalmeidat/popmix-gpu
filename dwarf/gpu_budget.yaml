@@ -1,0 +1,9 @@
+# Workload assumed for the dwarf-halo part of the GPU-hour estimate. Edit to match the plan, then rerun
+#   python dwarf/bench_dwarf_gpu.py --budget dwarf/gpu_budget.yaml ...
+# These are planning assumptions, not measurements.
+dwarfs: 6                 # classical dSphs in the LSST footprint (list to settle with Nitya)
+mocks_per_dwarf: 300      # injection-recovery (halo fraction x scale grid), null mocks, and forward-modeled
+                          # simulation mocks (e.g. Ananke/KRATOS-style), each fit with the 1- and 2-component models
+fields_per_dwarf: [150000, 1000000, 3000000]   # stars in the fit region: Gaia-DR3-like (measured Sculptor 5.5 deg:
+                          # ~146k), and two LSST-depth guesses; the budget table gives one row per value
+overhead: 1.5             # debugging, reruns, model variants, I/O
